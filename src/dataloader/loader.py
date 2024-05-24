@@ -13,8 +13,6 @@ from astroquery.hips2fits import hips2fits
 
 from src.utils import Dictionary
 
-DATA_DIR = './res/data/'
-DIR_TO_SAVE = DATA_DIR + 'cropped-images/'
 HIPS_CATALOGS = [
     'CDS/P/SDSS9/u',
     'CDS/P/SDSS9/g',
