@@ -19,9 +19,16 @@ def select_and_save(
 
     if not os.path.exists(savepath):
         os.makedirs(savepath)
+
+    if not os.path.exists('./res/data/specObj-dr9.fits'):
+        raise FileNotFoundError(
+            "Run jobs.sh to download specObj-dr9.fits file from SDSS catalog. " +\
+                "For further information see README.md."
+            )
     
     logging.info('Loading data..')
     
+
     data = Table.read('./res/data/specObj-dr9.fits', format='fits')
 
     logging.info('Selecting objects..')
