@@ -19,7 +19,7 @@ def main(cfg: DictConfig):
     assert obj in ('QSO', 'STAR', 'GALAXY')
     assert routine in ('test', 'run')
 
-    num_objects = 10 if routine == 'test' else 100_000
+    num_objects = 10 if routine == 'test' else cfg.number_of_objects
 
     images_config = Dictionary(OmegaConf.to_container(cfg.images_config))
     images_config.fov = Angle(images_config.fov * u.deg)
