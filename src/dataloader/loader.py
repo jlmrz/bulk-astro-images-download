@@ -48,7 +48,7 @@ def process_object(objinfo: Tuple, config: Dictionary[str, Any], savepath: Path)
     Returns:
         Status: 1 is success else 0
     """
-    ra, dec, objtype, z, zerr = objinfo
+    _, ra, dec, objtype, z, zerr = objinfo
 
     save_fname = '_'.join([objtype, '%.5f_%.5f' % (ra, dec)])
 
