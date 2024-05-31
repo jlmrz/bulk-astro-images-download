@@ -1,6 +1,6 @@
-## Redshifts estimation using INN
+## Bulk imaging data downloads
 
-A small application for downloading a large number of UGRIZ images of Galaxies, Stars and Quasar objects.
+A small application for downloading a large number of UGRIZ images (SDSS catalog) of Galaxies, Stars and Quasar objects.
 
 Later, we will add image-to-dataset transformation for training ML models.
 
