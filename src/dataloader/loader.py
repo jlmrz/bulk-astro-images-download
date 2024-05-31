@@ -43,13 +43,14 @@ def download_image(ra, dec, config: Dictionary[str, Any]) -> ndarray:
 def process_object(objinfo: Tuple, config: Dictionary[str, Any], savepath: Path) -> int:
     """
     Arguments:
-        objinfo: Tuple[objid, ra, dec, objtype, z, zerr]
+        objinfo: Tuple[ra, dec, objtype, z, zerr]
         config: Dictionary with image parameters (heigt x width, angle)
     Returns:
         Status: 1 is success else 0
     """
-    objid, ra, dec, objtype, z, zerr = objinfo
-    save_fname = '_'.join([objtype, str(objid).strip('[]').replace(' ', '')])
+    ra, dec, objtype, z, zerr = objinfo
+
+    save_fname = '_'.join([objtype, '%.5f_%.5f' % (ra, dec)])
 
     if not os.path.isfile(savepath / f'{save_fname}.npz'):
         try:
