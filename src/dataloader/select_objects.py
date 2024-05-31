@@ -4,37 +4,35 @@ import logging
 import numpy as np
 
 from typing import List
+from pathlib import Path
 from astropy.table import Table
 
 
 def select_and_save(
         objtype: str,
-        savepath: str,
+        savepath: Path,
+        nobj: int,
         overwrite: bool=True,
-        nobj: int=100_000,
         cols: List[str]=['Z', 'Z_ERR']
 ) -> None:
-    assert objtype in ('QSO', 'STAR', 'GALAXY')
+   
     objtype = '{:<6}'.format(objtype)
 
-    if not os.path.exists(savepath):
-        os.makedirs(savepath)
-
-    if not os.path.exists('./res/data/specObj-dr9.fits'):
+    if not os.path.exists(savepath.parent / 'specObj-dr9.fits'):
         raise FileNotFoundError(
             "Run jobs.sh to download specObj-dr9.fits file from SDSS catalog. " +\
                 "For further information see README.md."
             )
     
-    logging.info('Loading data..')
-    
+    logging.info('Loading table data')
 
-    data = Table.read('./res/data/specObj-dr9.fits', format='fits')
+    data = Table.read(savepath.parent / 'specObj-dr9.fits', format='fits')
 
     logging.info('Selecting objects..')
+    
     keepcols = ['OBJID', 'PLUG_RA', 'PLUG_DEC', 'CLASS']
     keepcols.extend(cols)
-    keepobj = np.where(data["CLASS"] == objtype)
+    keepobj = np.where((data["CLASS"] == objtype) & np.all((data["OBJID"] != np.zeros(5)), axis=1))
     data = data[keepcols][keepobj]
 
     del keepobj, keepcols
@@ -43,7 +41,7 @@ def select_and_save(
     indxs = np.sort(np.random.choice(N, size=nobj, replace=False))
     
     logging.info(f'Saving {nobj} randomly chosen objects..')
-    data[indxs].write(savepath + objtype.strip() + '.fits', format='fits', overwrite=overwrite)
+    data[indxs].write(savepath / f'{objtype.strip()}.fits', format='fits', overwrite=overwrite)
 
     logging.info(f'{objtype} file is saved.')
 
