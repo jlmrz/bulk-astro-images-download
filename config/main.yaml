@@ -1,0 +1,19 @@
+routine: 'test'
+objects: 'QSO'
+
+images_config:
+  width: 16
+  height: 16
+  fov: 0.002
+  projection: 'TSC'
+  min_cut: 0.5
+  get_query_payload: False
+  max_cut: 99.5
+
+directories:
+  base: .
+  data: ${directories.base}/data
+  data_run: ${directories.data}/${routine}
+  results: ${directories.data_run}/${objects}_${images_config.width}x${images_config.height}
+
+data_file: ${directories.data}/${routine}/${objects}.fits

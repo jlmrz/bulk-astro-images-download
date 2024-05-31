@@ -1,42 +1,52 @@
-import numpy as np
 import os
-import logging 
+import hydra
+import logging
+
+from pathlib import Path
+from omegaconf import DictConfig, OmegaConf
+
 from src.dataloader.select_objects import select_and_save
 from src.dataloader.loader import load_images
 from src.utils import Dictionary
 from astropy.coordinates import Angle
 from astropy import units as u
 
-logging.basicConfig(level=logging.INFO)
 
-DATA_DIR = './res/data/'
-np.random.seed(seed=0)
+@hydra.main(version_base=None, config_path="config", config_name="main")
+def main(cfg: DictConfig):
+    routine, obj = cfg.routine, cfg.objects
 
+    assert obj in ('QSO', 'STAR', 'GALAXY')
+    assert routine in ('test', 'run')
 
-def main_test():
+    num_objects = 10 if routine == 'test' else 100_000
 
-    config = Dictionary({
-        'width': 16,
-        'height': 16,
-        'fov': Angle(0.002 * u.deg),
-        'projection': 'TSC',
-        'min_cut': 0.5,
-        'get_query_payload': False,
-        'max_cut': 99.5,
-    })
+    images_config = Dictionary(OmegaConf.to_container(cfg.images_config))
+    images_config.fov = Angle(images_config.fov * u.deg)
 
-    for obj in ('GALAXY', 'QSO', 'STAR'):
-        if not os.path.exists(DATA_DIR + 'test/' + obj + '.fits'):
-            select_and_save(
-                objtype=obj, 
-                savepath=DATA_DIR + 'test/',
-                nobj=10
-            )
+    data_dir = Path(cfg.directories.data_run)
+    results_obj_dir = Path(cfg.directories.results)
 
-        load_images(
-            config=config, objtype=obj, path=DATA_DIR + 'test/'
+    if not os.path.exists(results_obj_dir):
+        results_obj_dir.mkdir(parents=True, exist_ok=True)
+
+    if not os.path.exists(cfg.data_file):
+        logging.info(f"Selecting and saving objects at {data_dir}")
+        
+        select_and_save(
+            objtype=obj, savepath=data_dir, nobj=num_objects
         )
-    
 
-if __name__ == '__main__':
-    main_test()
+    logging.info(f"Loading images" )
+
+    success_counter = load_images(
+        config=images_config, objtype=obj, path=results_obj_dir
+    )
+    logging.info(f'Number of objects processed: {success_counter}')
+
+
+if __name__ == '__main__':    
+    os.environ["HYDRA_FULL_ERROR"] = "1" 
+    logging.basicConfig(level=logging.INFO)
+
+    main()
