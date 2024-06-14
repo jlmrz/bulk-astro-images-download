@@ -37,16 +37,17 @@ def main(cfg: DictConfig):
         select_and_save(
             objtype=obj, savepath=data_dir, nobj=num_objects, source=source
         )
-
+        
+    # ---------------------------------------------------------------------------------
     logging.info(f"Loading images" )
 
-    if routine != 'run':
-        success_counter = load_images(
-            config=images_config, objtype=obj, path=results_obj_dir
+    success_counter = load_images(
+        config=images_config, objtype=obj, path=results_obj_dir
         )
 
-        logging.info(f'Number of objects processed: {success_counter}')
+    logging.info(f'Number of objects processed: {success_counter}')
 
+    # ---------------------------------------------------------------------------------
     logging.info(f'Creating hdf5 file..')
 
     npz_to_hdf5(
