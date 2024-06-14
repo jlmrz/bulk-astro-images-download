@@ -43,6 +43,8 @@ def select_and_save(
         
     data = data[keepcols]
     N = len(data)
+    nobj = nobj if nobj < N else N
+    
     indxs = np.sort(np.random.choice(N, size=nobj, replace=False))
     
     logging.info(f'Saving {nobj} randomly chosen objects..')
